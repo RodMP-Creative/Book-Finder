@@ -1,5 +1,6 @@
-import type { Request, Response, NextFunction } from 'express';
+import type {Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { Request as ExpressRequest } from 'express';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -9,12 +10,15 @@ interface JwtPayload {
   username: string;
   email: string;
 }
+interface CustomRequest extends ExpressRequest {
+  user: { _id: unknown; username: string };
+}
 
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
+export const authenticateToken = (req: CustomRequest, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization || '';
 
   if (authHeader) {
-    const token = authHeader.split(' ')[1];
+    const token = authHeader.split(' ')[1] || '';
 
     const secretKey = process.env.JWT_SECRET_KEY || '';
 
@@ -27,7 +31,8 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
       return next();
     });
   } else {
-    res.sendStatus(401); // Unauthorized
+    req.user = { _id: null, username: '' }; // Default value to ensure user is always defined
+    return next();
   }
 };
 
