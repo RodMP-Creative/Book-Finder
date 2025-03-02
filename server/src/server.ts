@@ -1,6 +1,5 @@
 import express from 'express';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { Request, Response } from 'express';
 import initializeDb from './config/connection.js';
 import jwt from 'jsonwebtoken';
@@ -9,9 +8,6 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { typeDefs, resolvers } from './schema/index.js';
 import routes from './routes/index.js';
 import cors from 'cors';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const server = new ApolloServer({
   typeDefs,
@@ -39,7 +35,7 @@ const startApolloServer = async () => {
   await server.start();
   await initializeDb();
 
-  const PORT = process.env.PORT || 3001;
+  const PORT = process.env.PORT || 3001; 
   const app = express();
 
   app.use(cors());
@@ -48,10 +44,10 @@ const startApolloServer = async () => {
   app.use('/graphql', expressMiddleware(server as any, { context }));
 
   if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../../client/dist')));
+    app.use(express.static(path.join(__dirname, '../client/dist')));
 
     app.get('*', (_req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
     });
   }
 
