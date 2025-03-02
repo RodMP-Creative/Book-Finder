@@ -7,11 +7,11 @@ dotenv.config();
 interface JwtPayload {
   _id: unknown;
   username: string;
-  email: string,
+  email: string;
 }
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization || req.body.token || req.query.token;
+  const authHeader = req.headers.authorization;
 
   if (authHeader) {
     const token = authHeader.split(' ')[1];
